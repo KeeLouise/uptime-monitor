@@ -3,6 +3,10 @@ import sqlite3
 
 app = Flask(__name__)
 
+@app.route("/")
+def home():
+    return app.send_static_file("index.html")
+
 @app.route("/api/sites")
 def get_sites():
     conn = sqlite3.connect("uptime.db")
@@ -31,6 +35,19 @@ def get_sites():
             uptime = None
         else:
             uptime = round(up / total * 100, 1)
+        
+        last = conn.execute(
+            "SELECT status_code FROM checks WHERE site_id = ? ORDER BY id DESC LIMIT 1",
+            (site_id,)
+        ).fetchone()
+        
+        if last is None:
+            status = "pending"
+        elif last[0] is not None and last[0] < 400:
+            status = "up"
+        else:
+            status = "down"
+            
         site = {
             "url": url,
             "uptime": uptime,
@@ -38,9 +55,10 @@ def get_sites():
             "total": total,
             "avg_ms": avg_ms,
             "id": site_id,
+            "status": status,
         }
         sites.append(site)
-        conn.close()
+    conn.close()
     return sites
 
 @app.route("/api/sites/<int:site_id>/checks")
@@ -59,7 +77,7 @@ def get_checks(site_id):
             "checked_at": checked_at
         }
         checks.append(check)
-        conn.close()
+    conn.close()
     return checks
 
 @app.route("/api/sites", methods=["POST"])
@@ -70,9 +88,9 @@ def add_site():
     conn = sqlite3.connect("uptime.db")
     try:
         cursor = conn.execute("INSERT INTO sites (url) VALUES (?)", (url,))
-    except:
-        return {"error": "Site already exists"}, 409
+    except sqlite3.IntegrityError:
         conn.close()
+        return {"error": "Site already exists"}, 409
     conn.commit()
     conn.close()
     
