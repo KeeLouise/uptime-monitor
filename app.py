@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 import sqlite3
 
 app = Flask(__name__)
@@ -40,6 +40,7 @@ def get_sites():
             "id": site_id,
         }
         sites.append(site)
+        conn.close()
     return sites
 
 @app.route("/api/sites/<int:site_id>/checks")
@@ -58,7 +59,37 @@ def get_checks(site_id):
             "checked_at": checked_at
         }
         checks.append(check)
+        conn.close()
     return checks
+
+@app.route("/api/sites", methods=["POST"])
+def add_site():
+    data = request.get_json()
+    url = data["url"]
+    
+    conn = sqlite3.connect("uptime.db")
+    try:
+        cursor = conn.execute("INSERT INTO sites (url) VALUES (?)", (url,))
+    except:
+        return {"error": "Site already exists"}, 409
+        conn.close()
+    conn.commit()
+    conn.close()
+    
+    return {"id": cursor.lastrowid, "url": url}, 201
+
+@app.route("/api/sites/<int:site_id>", methods=["DELETE"])
+def delete_site(site_id):
+    conn = sqlite3.connect("uptime.db")
+    conn.execute("DELETE FROM checks WHERE site_id = ?", (site_id,))
+    cursor = conn.execute("DELETE FROM sites WHERE id = ?", (site_id,))
+    conn.commit()
+    conn.close()
+
+    if cursor.rowcount == 0:
+        return {"error": "Site not found"}, 404
+
+    return {"deleted": site_id}
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
