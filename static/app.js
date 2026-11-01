@@ -46,7 +46,7 @@ async function loadSites() {
         const chartHtml = times.map((ms) => {
             const height = Math.round(ms / slowest * 100);
             return `<span style="height: ${height}%" title="${ms} ms"></span>`;
-        })
+        }).join("");
 
         card.innerHTML = `
            <h2><span>${site.url}</span></h2>
