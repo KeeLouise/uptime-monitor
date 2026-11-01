@@ -1,4 +1,4 @@
-import requests, time, sqlite3
+import requests, time, sqlite3, os
 
 conn = sqlite3.connect("uptime.db")
 
@@ -19,6 +19,17 @@ conn.execute("""
     )
 """)
 
+WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
+
+def send_alert(message):
+    print(f"ALERT: {message}")
+    if WEBHOOK_URL is None:
+        return
+    try:
+        requests.post(WEBHOOK_URL, json={"content": message}, timeout=5)
+    except requests.exceptions.RequestException:
+        print("Could not send Discord alert")
+        
 
 def check_site(site_id, url):
     print (f"URL: {url}")
@@ -32,6 +43,8 @@ def check_site(site_id, url):
             (site_id, response.status_code, response_ms)
         )
         conn.commit()
+        return response.status_code < 400
+
         
     except requests.exceptions.RequestException:
         conn.execute(
@@ -40,6 +53,7 @@ def check_site(site_id, url):
         )
         conn.commit()
         print("Status: DOWN")
+        return False
 
 starting_sites = ["https://disneystore.eu", "https://github.com", "https://this-site-does-not-exist-12345.com"
 ]
@@ -48,10 +62,20 @@ for url in starting_sites:
     conn.execute("INSERT OR IGNORE INTO sites (url) VALUES (?)", (url,))
 conn.commit()
 
+last_status = {}
+
 while True:
     rows = conn.execute("SELECT id, url FROM sites").fetchall()
     print("Checking sites...")
     for site_id, url in rows:
-        check_site(site_id, url)
+        is_up = check_site(site_id, url)
+        
+        if site_id in last_status and last_status[site_id] != is_up:
+            if is_up:
+                send_alert(f"{url} is back UP")
+            else:
+                send_alert(f"{url} is DOWN")
+        
+        last_status[site_id] = is_up
         print()
     time.sleep(10)
