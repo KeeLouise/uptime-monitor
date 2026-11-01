@@ -29,7 +29,7 @@ async function loadSites() {
         checks.reverse()
 
         const historyHtml = checks.map((check) => {
-            if(check.status_code !== null && check.status_code < 400){
+            if (check.status_code !== null && check.status_code < 400) {
                 return `<span class="up"></span>`;
             } else {
                 return `<span class ="down"></span>`
@@ -40,7 +40,7 @@ async function loadSites() {
         const times = checks
             .map((check) => check.response_ms)
             .filter((ms) => ms !== null);
-        
+
         const slowest = Math.max(...times)
 
         const chartHtml = times.map((ms) => {
@@ -49,15 +49,27 @@ async function loadSites() {
         }).join("");
 
         card.innerHTML = `
-           <h2><span>${site.url}</span></h2>
+           <h2><span>${site.url}</span><button class="close" title="Delete site">×</button></h2>
            <p>Status: ${site.status}</p>
            <p>Uptime: ${uptimeText}</p>
            <p>Avg response time: ${avgText}</p>
            <div class="history">${historyHtml}</div>
            <div class="chart">${chartHtml}</div>
            `;
-
         container.appendChild(card);
+
+        const closeButton = card.querySelector(".close");
+
+        closeButton.addEventListener("click", async function () {
+            if (!confirm(`Delete ${site.url}? Its history will be lost.`)) {
+                return;
+            } 
+            
+            await fetch(`/api/sites/${site.id}`, { method: "DELETE"});
+
+            loadSites();
+
+        })
     }
 
     document.getElementById("updated").textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
@@ -70,7 +82,7 @@ const message = document.getElementById("form-message");
 
 form.addEventListener("submit", async function (event) {
     event.preventDefault();
-    
+
     const response = await fetch("/api/sites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

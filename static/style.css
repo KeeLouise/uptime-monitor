@@ -118,17 +118,19 @@ body > .card {
   background: var(--down);
 }
 
-/* Close button */
-.card h2::after {
-  content: "×";
+/* Close button: a real <button class="close"> that deletes the site */
+.card h2 .close {
   position: absolute;
   right: 3px;
   top: 50%;
+  min-width: 0;
   width: 16px;
   height: 14px;
+  padding: 0;
   transform: translateY(-50%);
   font-size: 12px;
-  line-height: 13px;
+  font-weight: bold;
+  line-height: 12px;
   text-align: center;
   color: var(--dark);
   background: var(--face);
