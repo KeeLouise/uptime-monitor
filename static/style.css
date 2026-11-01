@@ -61,9 +61,11 @@ h1::before {
 }
 
 /* Site cards are drawn as windows */
-#sites {
+#sites,
+body > .card {
   max-width: 640px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .card {
@@ -151,7 +153,78 @@ h1::before {
   padding-bottom: 0.5rem;
 }
 
-/* Raised push buttons, ready for the add-site form */
+/* The form window has no status, so no status light */
+body > .card h2::before {
+  display: none;
+}
+
+/* Uptime history: one block per check, oldest on the left */
+.history {
+  display: flex;
+  gap: 1px;
+  height: 18px;
+  margin: 0.4rem 0.6rem;
+  padding: 2px;
+  background: var(--highlight);
+  box-shadow:
+    inset 1px 1px var(--shadow),
+    inset 2px 2px var(--dark);
+}
+
+.history span {
+  flex: 1;
+  background: var(--pending);
+}
+
+.history span.up {
+  background: var(--up);
+}
+
+.history span.down {
+  background: var(--down);
+}
+
+/* Response-time chart: one bar per check, height = response time */
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 60px;
+  margin: 0.4rem 0.6rem 0.6rem;
+  padding: 2px;
+  background: var(--highlight);
+  box-shadow:
+    inset 1px 1px var(--shadow),
+    inset 2px 2px var(--dark);
+}
+
+.chart span {
+  flex: 1;
+  min-height: 1px;
+  background: var(--title);
+}
+
+/* Add-site form inside a window */
+.card form {
+  display: flex;
+  gap: 6px;
+  padding: 0.5rem 0.6rem;
+}
+
+.card form input {
+  flex: 1;
+  min-width: 0;
+}
+
+#form-message:empty {
+  display: none;
+}
+
+#form-message.error {
+  color: var(--down);
+}
+
+/* Raised push buttons */
 button {
   font: inherit;
   min-width: 75px;

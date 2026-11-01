@@ -8,6 +8,14 @@
 </head>
 <body>
   <h1>Uptime Monitor <span id="updated"></span></h1>
+  <div class="card">
+    <h2><span>Add a site</span></h2>
+    <form id="add-form">
+      <input type="url" id="url-input" placeholder="https://example.com" required>
+      <button type="submit">Add</button>
+    </form>
+    <p id="form-message"></p>
+  </div>
   <div id="sites"></div>
 
   <script src="/static/app.js"></script>

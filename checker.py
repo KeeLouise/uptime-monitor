@@ -41,7 +41,7 @@ def check_site(site_id, url):
         conn.commit()
         print("Status: DOWN")
 
-starting_sites = ["https://disneystore.eu", "https://github.com", "https://vially.com", "https://this-site-does-not-exist-12345.com"
+starting_sites = ["https://disneystore.eu", "https://github.com", "https://this-site-does-not-exist-12345.com"
 ]
 
 for url in starting_sites:
