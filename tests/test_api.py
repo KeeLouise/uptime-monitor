@@ -43,10 +43,25 @@ def test_delete_missing_site(client):
     response = client.delete("/api/sites/999")
     assert response.status_code == 404
 
-
 def test_new_site_is_pending(client):
     client.post("/api/sites", json={"url": "https://example.com"})
     response = client.get("/api/sites")
     site = response.get_json()[0]
     assert site["status"] == "pending"
     assert site["uptime"] is None
+
+def test_add_site_without_url(client):
+    response = client.post("/api/sites", json={})
+    assert response.status_code == 400
+
+def test_add_site_with_banana(client):
+    response = client.post("/api/sites", json={"url": "banana"})
+    assert response.status_code == 400
+
+def test_add_site_with_file_url(client):
+    response = client.post("/api/sites", json={"url": "file://etc/password"})
+    assert response.status_code == 400
+
+def test_add_site_with_number(client):
+    response = client.post("/api/sites", json={"url": 5})
+    assert response.status_code == 400

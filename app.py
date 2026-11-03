@@ -1,4 +1,5 @@
 from flask import Flask, request
+from urllib.parse import urlparse
 import sqlite3
 
 DB_PATH = "uptime.db"
@@ -84,8 +85,17 @@ def get_checks(site_id):
 
 @app.route("/api/sites", methods=["POST"])
 def add_site():
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if data is None or "url" not in data:
+        return {"error": "Send JSON with a url"}, 400
+    
     url = data["url"]
+    if not isinstance(data, dict) or "url" not in data:
+        return {"error": "URL must be text"}, 400
+    
+    parts = urlparse(url)
+    if parts.scheme not in ("http", "https") or not parts.netloc:
+        return {"error": "url must start with a http:// or https://"}, 400
     
     conn = sqlite3.connect(DB_PATH)
     try:
