@@ -1,6 +1,9 @@
 async function loadSites() {
     const response = await fetch("/api/sites");
-    const sites = await response.json()
+    if (!response.ok) {
+        throw new Error(`Server error ${response.status}`);
+    }
+    const sites = await response.json();
 
     const container = document.getElementById("sites");
     container.innerHTML = "";
@@ -65,17 +68,25 @@ async function loadSites() {
         closeButton.addEventListener("click", async function () {
             if (!confirm(`Delete ${site.url}? Its history will be lost.`)) {
                 return;
-            } 
-            
+            }
+
             await fetch(`/api/sites/${site.id}`, { method: "DELETE"});
 
-            loadSites();
+            refresh();
 
         })
     }
 
     document.getElementById("updated").textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
 
+}
+
+async function refresh() {
+    try {
+        await loadSites();
+    } catch (error) {
+        document.getElementById("updated").textContent = "⚠ Can't reach the server. Retrying in 30 seconds…";
+    }
 }
 
 const form = document.getElementById("add-form");
@@ -85,17 +96,24 @@ const message = document.getElementById("form-message");
 form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    const response = await fetch("/api/sites", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: urlInput.value })
-    });
+    let response;
+    try {
+        response = await fetch("/api/sites", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: urlInput.value })
+        });
+    } catch (error) {
+        message.textContent = "Couldn't reach the server. Is it running?";
+        message.className = "error";
+        return;
+    }
 
     if (response.ok) {
         message.textContent = "Site added!";
         message.className = "";
         urlInput.value = "";
-        loadSites();
+        refresh();
     } else {
         const data = await response.json();
         message.textContent = data.error;
@@ -103,5 +121,5 @@ form.addEventListener("submit", async function (event) {
     }
 });
 
-loadSites();
-setInterval(loadSites, 30000);
+refresh();
+setInterval(refresh, 30000);
