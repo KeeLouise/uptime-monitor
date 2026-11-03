@@ -78,4 +78,4 @@ while True:
         
         last_status[site_id] = is_up
         print()
-    time.sleep(10)
+    time.sleep(60)

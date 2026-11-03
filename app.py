@@ -1,6 +1,8 @@
 from flask import Flask, request
 import sqlite3
 
+DB_PATH = "uptime.db"
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -9,7 +11,7 @@ def home():
 
 @app.route("/api/sites")
 def get_sites():
-    conn = sqlite3.connect("uptime.db")
+    conn = sqlite3.connect(DB_PATH)
     rows = conn.execute("SELECT id, url FROM sites").fetchall()
     
     sites = []
@@ -63,7 +65,7 @@ def get_sites():
 
 @app.route("/api/sites/<int:site_id>/checks")
 def get_checks(site_id):
-    conn = sqlite3.connect("uptime.db")
+    conn = sqlite3.connect(DB_PATH)
     rows = conn.execute(
         "SELECT status_code, response_ms, checked_at FROM checks WHERE site_id = ? ORDER BY id DESC LIMIT 50",
         (site_id,)
@@ -85,7 +87,7 @@ def add_site():
     data = request.get_json()
     url = data["url"]
     
-    conn = sqlite3.connect("uptime.db")
+    conn = sqlite3.connect(DB_PATH)
     try:
         cursor = conn.execute("INSERT INTO sites (url) VALUES (?)", (url,))
     except sqlite3.IntegrityError:
@@ -98,7 +100,7 @@ def add_site():
 
 @app.route("/api/sites/<int:site_id>", methods=["DELETE"])
 def delete_site(site_id):
-    conn = sqlite3.connect("uptime.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.execute("DELETE FROM checks WHERE site_id = ?", (site_id,))
     cursor = conn.execute("DELETE FROM sites WHERE id = ?", (site_id,))
     conn.commit()
