@@ -95,7 +95,7 @@ Ideas to pick from:
 
 ## Roadmap
 
-- [ ] Discord alerts when a site goes down or comes back up
-- [ ] Tests with `pytest`
+- [x] Discord alerts when a site goes down or comes back up
+- [x] Tests with `pytest`
 - [ ] Deploy it with a live demo link
 - [ ] Rebuild the dashboard in React
