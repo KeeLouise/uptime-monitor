@@ -1,4 +1,5 @@
 # Uptime Monitor
+![Tests](https://github.com/KeeLouise/uptime-monitor/actions/workflows/tests.yml/badge.svg)
 
 A self-hosted website uptime monitor with a Windows 95-style dashboard. It checks a list of websites every 60 seconds, records whether each one was up and how fast it responded, and shows the history in the browser.
 
@@ -79,19 +80,6 @@ Open **http://127.0.0.1:5001** in your browser. The server uses port 5001 becaus
 - **Python:** `requests`, `sqlite3`, Flask
 - **JavaScript:** no framework, just `fetch`, `async`/`await` and DOM methods
 - **CSS:** hand-written Windows 95 theme with no images
-
-## What I learned
-
-<!--
-Write this part in your own words. A few sentences for each point you choose is plenty.
-Ideas to pick from:
-- The "database is locked" bug: what caused it (a failed INSERT left a transaction open) and how you found and fixed it (closing the connection before returning)
-- Why you moved from one table to two (sites + checks) and what a foreign key is
-- How indentation and `return` decide when a line runs, and the bugs that taught you this
-- The difference between `site.uptime` (API data) and your own variables like `uptimeText`
-- How `fetch(url, options)` covers GET, POST and DELETE
-- Using ? placeholders in SQL instead of f-strings, and why
--->
 
 ## Roadmap
 
