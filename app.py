@@ -86,12 +86,13 @@ def get_checks(site_id):
 @app.route("/api/sites", methods=["POST"])
 def add_site():
     data = request.get_json(silent=True)
-    if data is None or "url" not in data:
-        return {"error": "Send JSON with a url"}, 400
-    
-    url = data["url"]
     if not isinstance(data, dict) or "url" not in data:
-        return {"error": "URL must be text"}, 400
+        return {"error": "Send JSON with a url"}, 400
+
+    url = data["url"]
+    if not isinstance(url, str):
+        return {"error": "url must be text"}, 400
+
     
     parts = urlparse(url)
     if parts.scheme not in ("http", "https") or not parts.netloc:

@@ -49,7 +49,7 @@ async function loadSites() {
         }).join("");
 
         card.innerHTML = `
-           <h2><span>${site.url}</span><button class="close" title="Delete site">×</button></h2>
+           <h2><span></span><button class="close" title="Delete site">×</button></h2>
            <p>Status: ${site.status}</p>
            <p>Uptime: ${uptimeText}</p>
            <p>Avg response time: ${avgText}</p>
@@ -57,6 +57,8 @@ async function loadSites() {
            <div class="chart">${chartHtml}</div>
            `;
         container.appendChild(card);
+        card.querySelector("h2 span").textContent = site.url;
+
 
         const closeButton = card.querySelector(".close");
 
