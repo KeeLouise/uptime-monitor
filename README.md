@@ -54,6 +54,19 @@ A check counts as "up" if it got a status code under 400. If the site couldn't b
 
 ## Running it locally
 
+### With Docker (easiest)
+
+```bash
+git clone https://github.com/KeeLouise/uptime-monitor.git
+cd uptime-monitor
+docker build -t uptime-monitor .
+docker run -d --name uptime -p 5001:5001 -v uptime-data:/app/data uptime-monitor
+```
+
+This one container runs both the checker and the web server. The database is stored in the `uptime-data` volume, so your history survives restarts and rebuilds.
+
+### Without Docker
+
 You need Python 3.
 
 ```bash
@@ -81,6 +94,8 @@ Open **http://127.0.0.1:5001** in your browser. The server uses port 5001 becaus
 - **Python:** `requests`, `sqlite3`, Flask
 - **JavaScript:** no framework, just `fetch`, `async`/`await` and DOM methods
 - **CSS:** hand-written Windows 95 theme with no images
+- **Deployment:** Docker, with gunicorn as the production web server
+
 
 ## Roadmap
 

@@ -1,6 +1,8 @@
 import requests, time, sqlite3, os
 
-conn = sqlite3.connect("uptime.db")
+DB_PATH = os.environ.get("DB_PATH", "uptime.db")
+
+conn = sqlite3.connect(DB_PATH)
 
 conn.execute("""
     CREATE TABLE IF NOT EXISTS sites (

@@ -163,6 +163,7 @@ body > .card h2::before {
 /* Uptime history: one block per check, oldest on the left */
 .history {
   display: flex;
+  justify-content: flex-end;
   gap: 1px;
   height: 18px;
   margin: 0.4rem 0.6rem;
@@ -175,6 +176,7 @@ body > .card h2::before {
 
 .history span {
   flex: 1;
+  max-width: 12px;
   background: var(--pending);
 }
 
@@ -190,6 +192,7 @@ body > .card h2::before {
 .chart {
   display: flex;
   align-items: flex-end;
+  justify-content: flex-end;
   gap: 1px;
   height: 60px;
   margin: 0.4rem 0.6rem 0.6rem;
@@ -202,6 +205,7 @@ body > .card h2::before {
 
 .chart span {
   flex: 1;
+  max-width: 12px;
   min-height: 1px;
   background: var(--title);
 }
