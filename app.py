@@ -1,8 +1,8 @@
 from flask import Flask, request
 from urllib.parse import urlparse
-import sqlite3
+import sqlite3, os
 
-DB_PATH = "uptime.db"
+DB_PATH = os.environ.get("DB_PATH", "uptime.db")
 
 app = Flask(__name__)
 
