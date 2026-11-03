@@ -1,4 +1,5 @@
 # Uptime Monitor
+
 ![Tests](https://github.com/KeeLouise/uptime-monitor/actions/workflows/tests.yml/badge.svg)
 
 A self-hosted website uptime monitor with a Windows 95-style dashboard. It checks a list of websites every 60 seconds, records whether each one was up and how fast it responded, and shows the history in the browser.
