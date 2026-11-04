@@ -266,3 +266,15 @@ input[type="url"] {
     inset -2px -2px var(--light),
     inset 2px 2px var(--dark);
 }
+
+/* Logged out: hide the admin controls. Logged in: hide the login window.
+   app.js adds or removes the "admin" class on <body>. */
+body:not(.admin) #add-card,
+body:not(.admin) .card h2 .close,
+body.admin #login-card {
+  display: none;
+}
+
+.card form + button {
+  margin: 0 0.6rem 0.6rem;
+}

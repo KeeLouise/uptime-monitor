@@ -8,6 +8,7 @@ A self-hosted website uptime monitor with a Windows 95-style dashboard. It check
 
 ## Features
 
+- Admin login: anyone can view the dashboard, but only you can add or delete sites
 - Checks every site once a minute and records the status code and response time
 - Counts timeouts and connection failures as downtime instead of crashing
 - Shows uptime % and average response time for each site
@@ -51,6 +52,12 @@ A check counts as "up" if it got a status code under 400. If the site couldn't b
 | `GET` | `/api/sites/<id>/checks` | The 50 most recent checks for one site |
 | `POST` | `/api/sites` | Adds a site. Body: `{"url": "https://example.com"}`. Returns `201`, or `409` if the site already exists |
 | `DELETE` | `/api/sites/<id>` | Deletes a site and its checks. Returns `404` if the site doesn't exist |
+| `POST` | `/api/login` | Logs in. Body: `{"password": "..."}`. Returns `401` if the password is wrong |
+| `POST` | `/api/logout` | Logs out |
+| `GET` | `/api/me` | `{"admin": true}` if you're logged in, otherwise `false` |
+
+Adding and deleting sites returns `401` unless you're logged in.
+
 
 ## Running it locally
 
@@ -60,7 +67,8 @@ A check counts as "up" if it got a status code under 400. If the site couldn't b
 git clone https://github.com/KeeLouise/uptime-monitor.git
 cd uptime-monitor
 docker build -t uptime-monitor .
-docker run -d --name uptime -p 5001:5001 -v uptime-data:/app/data uptime-monitor
+Generate a secret key with `python -c "import secrets; print(secrets.token_hex(32))"`.
+uptime-monitor
 ```
 
 This one container runs both the checker and the web server. The database is stored in the `uptime-data` volume, so your history survives restarts and rebuilds.
@@ -84,7 +92,8 @@ python checker.py
 ```
 
 ```bash
-python app.py
+ADMIN_PASSWORD=choose-a-password python app.py
+
 ```
 
 Open **http://127.0.0.1:5001** in your browser. The server uses port 5001 because macOS uses port 5000 for AirPlay.

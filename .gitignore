@@ -13,3 +13,6 @@ __pycache__/
 
 # pytest
 .pytest_cache/
+
+# code workspace
+*.code-workspace

@@ -121,5 +121,50 @@ form.addEventListener("submit", async function (event) {
     }
 });
 
+async function checkLogin() {
+    const response = await fetch("/api/me");
+    const data = await response.json();
+    document.body.classList.toggle("admin", data.admin);
+}
+
+const loginForm = document.getElementById("login-form");
+const passwordInput = document.getElementById("password-input");
+const loginMessage = document.getElementById("login-message");
+
+loginForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    let response;
+    try {
+        response = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password: passwordInput.value })
+        });
+    } catch (error) {
+        loginMessage.textContent = "Couldn't reach the server. Is it running?";
+        loginMessage.className = "error";
+        return;
+    }
+
+    if (response.ok) {
+        passwordInput.value = "";
+        loginMessage.textContent = "";
+        checkLogin();
+    } else {
+        const data = await response.json();
+        loginMessage.textContent = data.error;
+        loginMessage.className = "error";
+    }
+});
+
+const logoutButton = document.getElementById("logout-button");
+
+logoutButton.addEventListener("click", async function () {
+    await fetch("/api/logout", { method: "POST" });
+    checkLogin();
+});
+
+checkLogin();
 refresh();
 setInterval(refresh, 30000);
