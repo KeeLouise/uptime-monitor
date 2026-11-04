@@ -67,9 +67,13 @@ Adding and deleting sites returns `401` unless you're logged in.
 git clone https://github.com/KeeLouise/uptime-monitor.git
 cd uptime-monitor
 docker build -t uptime-monitor .
-Generate a secret key with `python -c "import secrets; print(secrets.token_hex(32))"`.
-uptime-monitor
+docker run -d --name uptime -p 5001:5001 -v uptime-data:/app/data \
+  -e ADMIN_PASSWORD=choose-a-password \
+  -e SECRET_KEY=paste-a-random-key-here \
+  uptime-monitor
 ```
+
+Generate a secret key with `python -c "import secrets; print(secrets.token_hex(32))"`.
 
 This one container runs both the checker and the web server. The database is stored in the `uptime-data` volume, so your history survives restarts and rebuilds.
 
@@ -93,7 +97,6 @@ python checker.py
 
 ```bash
 ADMIN_PASSWORD=choose-a-password python app.py
-
 ```
 
 Open **http://127.0.0.1:5001** in your browser. The server uses port 5001 because macOS uses port 5000 for AirPlay.
