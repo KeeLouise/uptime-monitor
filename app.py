@@ -68,17 +68,22 @@ def get_sites():
             uptime = round(up / total * 100, 1)
         
         last = conn.execute(
-            "SELECT status_code FROM checks WHERE site_id = ? ORDER BY id DESC LIMIT 1",
+            "SELECT status_code, error FROM checks WHERE site_id = ? ORDER BY id DESC LIMIT 1",
             (site_id,)
         ).fetchone()
-        
+
         if last is None:
             status = "pending"
         elif last[0] is not None and last[0] < 400:
             status = "up"
         else:
             status = "down"
-            
+
+        if last is None:
+            error = None
+        else:
+            error = last[1]
+
         site = {
             "url": url,
             "uptime": uptime,
@@ -87,6 +92,7 @@ def get_sites():
             "avg_ms": avg_ms,
             "id": site_id,
             "status": status,
+            "error": error,
         }
         sites.append(site)
     conn.close()

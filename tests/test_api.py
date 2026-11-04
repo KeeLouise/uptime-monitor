@@ -15,6 +15,7 @@ def client(tmp_path, monkeypatch):
            site_id INTEGER NOT NULL REFERENCES sites(id),
            status_code INTEGER,
            response_ms INTEGER,
+           error TEXT,
            checked_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -91,3 +92,31 @@ def test_logout(admin):
     admin.post("/api/logout")
     response = admin.get("/api/me")
     assert response.get_json() == {"admin": False}
+
+def test_site_shows_latest_error(admin):
+    admin.post("/api/sites", json={"url": "https://example.com"})
+
+    conn = sqlite3.connect(app.DB_PATH)
+    conn.execute(
+        "INSERT INTO checks (site_id, status_code, response_ms, error) VALUES (1, 503, 120, 'HTTP 503')"
+    )
+    conn.commit()
+    conn.close()
+
+    site = admin.get("/api/sites").get_json()[0]
+    assert site["status"] == "down"
+    assert site["error"] == "HTTP 503"
+
+def test_up_site_has_no_error(admin):
+    admin.post("/api/sites", json={"url": "https://example.com"})
+
+    conn = sqlite3.connect(app.DB_PATH)
+    conn.execute(
+        "INSERT INTO checks (site_id, status_code, response_ms, error) VALUES (1, 200, 120, NULL)"
+    )
+    conn.commit()
+    conn.close()
+
+    site = admin.get("/api/sites").get_json()[0]
+    assert site["status"] == "up"
+    assert site["error"] is None
