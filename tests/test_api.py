@@ -24,44 +24,70 @@ def client(tmp_path, monkeypatch):
     return app.app.test_client()
 
 
+@pytest.fixture
+def admin(client, monkeypatch):
+    monkeypatch.setattr(app, "ADMIN_PASSWORD", "test-password")
+    client.post("/api/login", json={"password": "test-password"})
+    return client
+
+
 def test_no_sites_at_start(client):
     response = client.get("/api/sites")
     assert response.status_code == 200
     assert response.get_json() == []
     
-def test_add_site(client):
-    response = client.post("/api/sites", json={"url": "https://example.com"})
+def test_add_site(admin):
+    response = admin.post("/api/sites", json={"url": "https://example.com"})
     assert response.status_code == 201
     assert response.get_json()["url"] == "https://example.com"
     
-def test_duplicate_site(client):
-    client.post("/api/sites", json={"url": "https://example.com"})
-    response = client.post("/api/sites", json={"url": "https://example.com"})
+def test_duplicate_site(admin):
+    admin.post("/api/sites", json={"url": "https://example.com"})
+    response = admin.post("/api/sites", json={"url": "https://example.com"})
     assert response.status_code == 409
     
-def test_delete_missing_site(client):
-    response = client.delete("/api/sites/999")
+def test_delete_missing_site(admin):
+    response = admin.delete("/api/sites/999")
     assert response.status_code == 404
 
-def test_new_site_is_pending(client):
-    client.post("/api/sites", json={"url": "https://example.com"})
-    response = client.get("/api/sites")
+def test_new_site_is_pending(admin):
+    admin.post("/api/sites", json={"url": "https://example.com"})
+    response = admin.get("/api/sites")
     site = response.get_json()[0]
     assert site["status"] == "pending"
     assert site["uptime"] is None
 
-def test_add_site_without_url(client):
-    response = client.post("/api/sites", json={})
+def test_add_site_without_url(admin):
+    response = admin.post("/api/sites", json={})
     assert response.status_code == 400
 
-def test_add_site_with_banana(client):
-    response = client.post("/api/sites", json={"url": "banana"})
+def test_add_site_with_banana(admin):
+    response = admin.post("/api/sites", json={"url": "banana"})
     assert response.status_code == 400
 
-def test_add_site_with_file_url(client):
-    response = client.post("/api/sites", json={"url": "file://etc/password"})
+def test_add_site_with_file_url(admin):
+    response = admin.post("/api/sites", json={"url": "file://etc/password"})
     assert response.status_code == 400
 
-def test_add_site_with_number(client):
-    response = client.post("/api/sites", json={"url": 5})
+def test_add_site_with_number(admin):
+    response = admin.post("/api/sites", json={"url": 5})
     assert response.status_code == 400
+
+
+def test_add_site_logged_out(client):
+    response = client.post("/api/sites", json={"url": "https://example.com"})
+    assert response.status_code == 401
+
+def test_delete_site_logged_out(client):
+    response = client.delete("/api/sites/1")
+    assert response.status_code == 401
+
+def test_login_wrong_password(client, monkeypatch):
+    monkeypatch.setattr(app, "ADMIN_PASSWORD", "test-password")
+    response = client.post("/api/login", json={"password": "wrong"})
+    assert response.status_code == 401
+
+def test_logout(admin):
+    admin.post("/api/logout")
+    response = admin.get("/api/me")
+    assert response.get_json() == {"admin": False}

@@ -1,14 +1,42 @@
-from flask import Flask, request
+from flask import Flask, request, session
 from urllib.parse import urlparse
-import sqlite3, os
+import sqlite3, os, hmac
 
 DB_PATH = os.environ.get("DB_PATH", "uptime.db")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
 app = Flask(__name__)
+
+app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
 @app.route("/")
 def home():
     return app.send_static_file("index.html")
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict) or not isinstance(data.get("password"), str):
+        return {"error": "Send JSON with a password"}, 400
+    
+    if ADMIN_PASSWORD is None:
+        return {"error": "Login isn't set up"}, 503
+    
+    if not hmac.compare_digest(data["password"].encode(), ADMIN_PASSWORD.encode()):
+        return {"error": "Wrong password"}, 401
+    
+    session["admin"] = True
+    return {"admin": True}
+    
+@app.route("/api/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return {"admin": False}
+
+
+@app.route("/api/me")
+def me():
+    return{"admin": session.get("admin", False)}
 
 @app.route("/api/sites")
 def get_sites():
@@ -85,6 +113,9 @@ def get_checks(site_id):
 
 @app.route("/api/sites", methods=["POST"])
 def add_site():
+    if not session.get("admin"):
+        return {"error": "Please log in first"}, 401
+
     data = request.get_json(silent=True)
     if not isinstance(data, dict) or "url" not in data:
         return {"error": "Send JSON with a url"}, 400
@@ -111,6 +142,9 @@ def add_site():
 
 @app.route("/api/sites/<int:site_id>", methods=["DELETE"])
 def delete_site(site_id):
+    if not session.get("admin"):
+        return {"error": "Please log in first"}, 401
+    
     conn = sqlite3.connect(DB_PATH)
     conn.execute("DELETE FROM checks WHERE site_id = ?", (site_id,))
     cursor = conn.execute("DELETE FROM sites WHERE id = ?", (site_id,))
