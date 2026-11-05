@@ -307,3 +307,30 @@ input {
   background: var(--surface);
   border: 2px solid var(--ok);
 }
+
+/* Header: last-checked time and the pause button, pushed to the right */
+.header-controls {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-controls .last-checked {
+  color: var(--text-muted);
+}
+
+/* Amber outline while live updates are paused, so the state is visible */
+.button--paused {
+  border-color: var(--warn);
+}
+
+.error-banner {
+  max-width: 76rem;
+  margin: 1rem auto 0;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  background: #2a1a1f;
+  border: 2px solid var(--down);
+}
