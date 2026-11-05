@@ -21,7 +21,7 @@ function App() {
         setLastChecked(new Date());
         setError(null);
       } catch {
-        setError("Cant reach the server. We'll keep trying every 30 seconds.");
+        setError("Can't reach the server. We'll keep trying every 30 seconds.");
       }
     }
 
@@ -49,14 +49,10 @@ function App() {
         )}
 
         <div className="header-controls">
-          {lastChecked === null ? (
-            <p className="page-intro">Loading your sites…</p>
-          ) : problems.length === 0 ? (
-            <p className="empty">Nothing needs attention. Every site is up.</p>
-          ) : (
-            <ol className="problem-list">
-              ...unchanged...
-            </ol>
+          {lastChecked && (
+            <span className="last-checked">
+              Last checked {lastChecked.toLocaleTimeString()}
+            </span>
           )}
           <button
             type="button"
@@ -76,7 +72,9 @@ function App() {
           <h1 className="page-title">Needs attention</h1>
           <p className="page-intro">Most urgent first.</p>
 
-          {problems.length === 0 ? (
+          {lastChecked === null ? (
+            <p className="page-intro">Loading your sites…</p>
+          ) : problems.length === 0 ? (
             <p className="empty">Nothing needs attention. Every site is up.</p>
           ) : (
             <ol className="problem-list">
