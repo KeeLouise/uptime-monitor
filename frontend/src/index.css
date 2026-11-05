@@ -1,111 +1,309 @@
+/* Uptime Monitor, built to WCAG 2.2 AAA.
+   Every text colour below is at least 7:1 against --bg and --surface.
+   Sizes are in rem so text scales when the user zooms or changes font size. */
+
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --bg: #0c1018;
+  --surface: #151c2a;
+  --surface-raised: #1b2436;
+  --border: #3a4660;        /* decoration only */
+  --control-border: #7d8aa3; /* 3:1+ against the background, for inputs and buttons */
+  --text: #f1f4f9;
+  --text-muted: #c9d2e0;
+  --down: #ff8a99;
+  --warn: #ffc870;
+  --info: #9cc4ff;
+  --ok: #7ee2a8;
+  --focus: #ffd54a;
+  --on-accent: #0c1018;     /* text on top of the coloured chips and buttons */
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --radius: 1rem;
+  --font: "Atkinson Hyperlegible", system-ui, sans-serif;
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  color-scheme: dark;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 1.0625rem;
+  line-height: 1.5;
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+/* No movement for people who ask their system for less of it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* A thick, high-contrast focus ring on everything you can tab to */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+a {
+  color: var(--info);
+  text-underline-offset: 3px;
 }
 
 h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
+h2,
+h3 {
+  line-height: 1.25;
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+p {
+  margin: 0;
+  max-width: 65ch;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+/* Hidden on screen, still read out by screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--focus);
+  color: var(--on-accent);
+  font-weight: 700;
+  z-index: 10;
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+/* Page layout */
+.app-header {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header .app-name {
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.app-header .summary {
+  color: var(--text-muted);
+}
+
+.layout {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1.75rem 1rem 3rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.layout > main {
+  flex: 999 1 36rem;
+  min-width: 0;
+}
+
+.layout > aside {
+  flex: 1 1 20rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+}
+
+.page-intro {
+  color: var(--text-muted);
+  margin-bottom: 1.4rem;
+}
+
+/* Problem cards */
+.problem-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.problem-card {
+  padding: 1.25rem 1.4rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* The first card is the front of the stack: bigger, outlined, with layers behind it */
+.problem-list > li:first-child .problem-card {
+  position: relative;
+  padding: 1.6rem 1.75rem;
+  background: var(--surface-raised);
+  border: 3px solid var(--down);
+  box-shadow:
+    0 0.7rem 0 -0.35rem #1f2940,
+    0 1.4rem 0 -0.7rem #1a2233,
+    0 1.5rem 3rem rgba(0, 0, 0, 0.45);
+  margin-bottom: 1.4rem;
+}
+
+.problem-list > li:first-child .problem-card h2 {
+  font-size: 1.75rem;
+}
+
+.problem-card h2 {
+  font-size: 1.2rem;
+  overflow-wrap: anywhere;
+}
+
+.problem-card .reason {
+  font-size: 1.1rem;
+}
+
+.problem-card .meta {
+  color: var(--text-muted);
+}
+
+/* Status chip: always an icon and a word, never colour alone */
+.chip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 700;
+  color: var(--on-accent);
+}
+
+.chip svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.chip--down {
+  background: var(--down);
+}
+
+.chip--warn {
+  background: var(--warn);
+}
+
+.chip--info {
+  background: var(--info);
+}
+
+/* Panels in the sidebar */
+.panel {
+  padding: 1.4rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.panel h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.healthy-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.healthy-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.healthy-list .site {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+.healthy-list svg {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--ok);
+}
+
+.healthy-list .ms {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Buttons and inputs: at least 44px tall (2.75rem), AAA target size */
+button,
+input {
+  font: inherit;
+}
+
+.button {
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid var(--control-border);
+  background: transparent;
+  color: var(--text);
+}
+
+.button--primary {
+  border-color: transparent;
+  background: var(--info);
+  color: var(--on-accent);
+}
+
+.empty {
+  padding: 1.4rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 2px solid var(--ok);
 }
