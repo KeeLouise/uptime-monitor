@@ -1,9 +1,16 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 import { Button, FieldError, Form, Input, Label, TextField } from "react-aria-components";
 
-function LoginForm({ onLoggedIn }) {
+function LoginForm({ onLoggedIn, focusOnMount }) {
     const [password, setPassword] = useState("");
     const [serverError, setServerError] = useState(null);
+    const headingRef = useRef(null);
+
+    useEffect(() => {
+        if (focusOnMount && headingRef.current) {
+            headingRef.current.focus();
+        }
+    }, [focusOnMount]);
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -32,7 +39,9 @@ function LoginForm({ onLoggedIn }) {
 
     return (
         <section className="panel" aria-labelledby="login-heading">
-            <h2 id="login-heading">Log in to add or delete sites</h2>
+            <h2 id="login-heading" ref={headingRef} tabIndex={-1}>
+                Log in to add or delete sites
+            </h2>
 
             <Form
                 onSubmit={handleSubmit}
