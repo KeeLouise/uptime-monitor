@@ -1,4 +1,6 @@
-function HealthyList({ sites }) {
+import DeleteSiteButton from "./DeleteSiteButton"
+
+function HealthyList({ sites, isAdmin, onDeleted }) {
     return (
         <section className="panel" aria-labelledby="healthy-heading">
             <h2 id="healthy-heading">Healthy ({sites.length})</h2>
@@ -14,6 +16,9 @@ function HealthyList({ sites }) {
                             <span className="sr-only"> is up</span>
                         </span>
                         <span className="ms">{site.avg_ms} ms</span>
+                        {isAdmin && (
+                            <div className="card-actions"><DeleteSiteButton site={site} onDeleted={onDeleted} /></div>
+                        )}
                     </li>
                 ))}
             </ul>

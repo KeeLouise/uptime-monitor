@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ProblemCard from "./components/ProblemCard.jsx";
 import HealthyList from "./components/HealthyList.jsx";
 import AddSiteForm from "./components/AddSiteForm.jsx";
 import LoginForm from "./components/LoginForm.jsx";
+
 
 function App() {
   const [sites, setSites] = useState([]);
@@ -12,6 +13,9 @@ function App() {
   const [reloadKey, setReloadKey] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [focusTarget, setFocusTarget] = useState(null);
+  const [announcement, setAnnouncement] = useState("");
+  const mainHeadingRef = useRef(null);
+
 
 
 
@@ -59,6 +63,17 @@ function App() {
 
   }
 
+    function handleDeleted(url) {
+    setAnnouncement(`Deleted ${url}.`);
+    setReloadKey(reloadKey + 1);
+  }
+
+  useEffect(() => {
+    if (announcement) {
+      mainHeadingRef.current.focus();
+    }
+  }, [announcement]);
+
 
   const problems = sites.filter((site) => site.status !== "up");
   const healthy = sites.filter((site) => site.status === "up");
@@ -100,7 +115,8 @@ function App() {
 
       <div className="layout">
         <main id="main">
-          <h1 className="page-title">Needs attention</h1>
+          <h1 className="page-title" ref={mainHeadingRef} tabIndex={-1}>Needs attention</h1>
+          <p role="status" className="sr-only">{announcement}</p>
           <p className="page-intro">Most urgent first.</p>
 
           {lastChecked === null ? (
@@ -111,7 +127,7 @@ function App() {
             <ol className="problem-list">
               {problems.map((site) => (
                 <li key={site.id}>
-                  <ProblemCard site={site} />
+                  <ProblemCard site={site} isAdmin={isAdmin} onDeleted={handleDeleted} />
                 </li>
               ))}
             </ol>
@@ -119,7 +135,7 @@ function App() {
         </main>
 
         <aside aria-label="Healthy sites and add a site">
-          <HealthyList sites={healthy} />
+          <HealthyList sites={healthy}  isAdmin={isAdmin} onDeleted={handleDeleted}/>
           {isAdmin ? (
             <AddSiteForm
               onAdded={() => setReloadKey(reloadKey + 1)}
