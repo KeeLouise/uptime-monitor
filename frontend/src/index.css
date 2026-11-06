@@ -334,3 +334,64 @@ input {
   background: #2a1a1f;
   border: 2px solid var(--down);
 }
+
+/* Add-site form (React Aria components add the data- attributes used below) */
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field label {
+  font-weight: 700;
+}
+
+.field .hint {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.field input {
+  min-height: 3rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.6rem;
+  border: 2px solid var(--control-border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.field input[data-focus-visible] {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Invalid: a red border AND the error text below, never colour alone */
+.field[data-invalid] input {
+  border-color: var(--down);
+}
+
+.field-error {
+  color: var(--down);
+  font-weight: 700;
+}
+
+.button[data-focus-visible] {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.button[data-pressed] {
+  transform: translateY(1px);
+}
+
+.form-success {
+  margin-top: 0.75rem;
+  color: var(--ok);
+  font-weight: 700;
+}

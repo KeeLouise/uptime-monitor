@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import ProblemCard from "./components/ProblemCard.jsx";
 import HealthyList from "./components/HealthyList.jsx";
+import AddSiteForm from "./components/AddSiteForm.jsx";
 
 function App() {
   const [sites, setSites] = useState([]);
   const [live, setLive] = useState(true);
   const [lastChecked, setLastChecked] = useState(null);
   const [error, setError] = useState(null);
+  const [reloadKey, setReloadKey] = useState(0);
 
 
   useEffect(() => {
@@ -32,7 +34,7 @@ function App() {
     load();
     const timer = setInterval(load, 30000);
     return () => clearInterval(timer);
-  }, [live]);
+  }, [live, reloadKey]);
 
   const problems = sites.filter((site) => site.status !== "up");
   const healthy = sites.filter((site) => site.status === "up");
@@ -87,8 +89,9 @@ function App() {
           )}
         </main>
 
-        <aside aria-label="Healthy sites">
+        <aside aria-label="Healthy sites and add a site">
           <HealthyList sites={healthy} />
+          <AddSiteForm onAdded={() => setReloadKey(reloadKey + 1)} />
         </aside>
       </div>
     </>
