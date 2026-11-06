@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import DeleteSiteButton from "./DeleteSiteButton";
 
 const ICONS = {
@@ -24,9 +25,12 @@ function ProblemCard({ site, isAdmin, onDeleted }) {
             <h2 id={`site-${site.id}`}>{site.url}</h2>
             {site.error && <p className="reason">{site.error}</p>}
             <p className="meta">Uptime: {uptimeText}</p>
-            {isAdmin && (
-                <div className="card-actions"><DeleteSiteButton site={site} onDeleted={onDeleted} /></div>
-            )}
+            <div className="card-actions">
+                <Link to={`/sites/${site.id}`} className="link-target">
+                    Details<span className="sr-only"> for {site.url}</span>
+                </Link>
+                {isAdmin && <DeleteSiteButton site={site} onDeleted={onDeleted} />}
+            </div>
         </article>
     )
 }

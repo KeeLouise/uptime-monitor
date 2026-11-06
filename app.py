@@ -10,7 +10,8 @@ app = Flask(__name__, static_folder="frontend/dist", static_url_path="")
 app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
 @app.route("/")
-def home():
+@app.route("/sites/<int:site_id>")
+def home(site_id=None):
     return app.send_static_file("index.html")
 
 @app.route("/api/login", methods=["POST"])

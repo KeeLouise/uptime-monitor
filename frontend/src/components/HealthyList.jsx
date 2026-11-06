@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import DeleteSiteButton from "./DeleteSiteButton"
 
 function HealthyList({ sites, isAdmin, onDeleted }) {
@@ -16,9 +17,12 @@ function HealthyList({ sites, isAdmin, onDeleted }) {
                             <span className="sr-only"> is up</span>
                         </span>
                         <span className="ms">{site.avg_ms} ms</span>
-                        {isAdmin && (
-                            <div className="card-actions"><DeleteSiteButton site={site} onDeleted={onDeleted} /></div>
-                        )}
+                        <div className="card-actions">
+                            <Link to={`/sites/${site.id}`} className="link-target">
+                                Details<span className="sr-only"> for {site.url}</span>
+                            </Link>
+                            {isAdmin && <DeleteSiteButton site={site} onDeleted={onDeleted} />}
+                        </div>
                     </li>
                 ))}
             </ul>
