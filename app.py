@@ -5,7 +5,7 @@ import sqlite3, os, hmac
 DB_PATH = os.environ.get("DB_PATH", "uptime.db")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="frontend/dist", static_url_path="")
 
 app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
 
