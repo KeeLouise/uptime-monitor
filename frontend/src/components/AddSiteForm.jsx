@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button, FieldError, Form, Input, Label, Text, TextField } from "react-aria-components"
 
-function AddSiteForm({ onAdded }) {
+function AddSiteForm({ onAdded, focusOnMount }) {
     const [url, setUrl] = useState("");
     const [serverError, setServerError] = useState(null);
     const [message, setMessage] = useState("");
+    const headingRef = useRef(null);
+
+    useEffect(() => {
+        if (focusOnMount && headingRef.current) {
+            headingRef.current.focus();
+        }
+    }, [focusOnMount]);
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -35,7 +42,9 @@ function AddSiteForm({ onAdded }) {
 
     return (
         <section className="panel" aria-labelledby="add-heading">
-            <h2 id="add-heading">Add a site</h2>
+            <h2 id="add-heading" ref={headingRef} tabIndex={-1}>
+                Add a site
+            </h2>
 
             <Form
                 onSubmit={handleSubmit}

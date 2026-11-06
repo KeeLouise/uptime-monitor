@@ -11,6 +11,8 @@ function App() {
   const [error, setError] = useState(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [focusTarget, setFocusTarget] = useState(null);
+
 
 
   useEffect(() => {
@@ -52,6 +54,8 @@ function App() {
       method: "POST",
     })
     setIsAdmin(false)
+    setFocusTarget("login");
+
 
   }
 
@@ -117,9 +121,18 @@ function App() {
         <aside aria-label="Healthy sites and add a site">
           <HealthyList sites={healthy} />
           {isAdmin ? (
-            <AddSiteForm onAdded={() => setReloadKey(reloadKey + 1)} />
+            <AddSiteForm
+              onAdded={() => setReloadKey(reloadKey + 1)}
+              focusOnMount={focusTarget === "add"}
+            />
           ) : (
-            <LoginForm onLoggedIn={() => setIsAdmin(true)} />
+            <LoginForm
+              onLoggedIn={() => {
+                setIsAdmin(true);
+                setFocusTarget("add");
+              }}
+              focusOnMount={focusTarget === "login"}
+            />
           )}
         </aside>
       </div>
