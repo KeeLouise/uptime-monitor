@@ -1,0 +1,397 @@
+/* Uptime Monitor, built to WCAG 2.2 AAA.
+   Every text colour below is at least 7:1 against --bg and --surface.
+   Sizes are in rem so text scales when the user zooms or changes font size. */
+
+:root {
+  --bg: #0c1018;
+  --surface: #151c2a;
+  --surface-raised: #1b2436;
+  --border: #3a4660;        /* decoration only */
+  --control-border: #7d8aa3; /* 3:1+ against the background, for inputs and buttons */
+  --text: #f1f4f9;
+  --text-muted: #c9d2e0;
+  --down: #ff8a99;
+  --warn: #ffc870;
+  --info: #9cc4ff;
+  --ok: #7ee2a8;
+  --focus: #ffd54a;
+  --on-accent: #0c1018;     /* text on top of the coloured chips and buttons */
+
+  --radius: 1rem;
+  --font: "Atkinson Hyperlegible", system-ui, sans-serif;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+/* No movement for people who ask their system for less of it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* A thick, high-contrast focus ring on everything you can tab to */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+a {
+  color: var(--info);
+  text-underline-offset: 3px;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+  max-width: 65ch;
+}
+
+/* Hidden on screen, still read out by screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--focus);
+  color: var(--on-accent);
+  font-weight: 700;
+  z-index: 10;
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+/* Page layout */
+.app-header {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header .app-name {
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.app-header .summary {
+  color: var(--text-muted);
+}
+
+.layout {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding: 1.75rem 1rem 3rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.layout > main {
+  flex: 999 1 36rem;
+  min-width: 0;
+}
+
+.layout > aside {
+  flex: 1 1 20rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page-title {
+  font-size: 2rem;
+  margin-bottom: 0.4rem;
+}
+
+.page-intro {
+  color: var(--text-muted);
+  margin-bottom: 1.4rem;
+}
+
+/* Problem cards */
+.problem-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.problem-card {
+  padding: 1.25rem 1.4rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* The first card is the front of the stack: bigger, outlined, with layers behind it */
+.problem-list > li:first-child .problem-card {
+  position: relative;
+  padding: 1.6rem 1.75rem;
+  background: var(--surface-raised);
+  border: 3px solid var(--down);
+  box-shadow:
+    0 0.7rem 0 -0.35rem #1f2940,
+    0 1.4rem 0 -0.7rem #1a2233,
+    0 1.5rem 3rem rgba(0, 0, 0, 0.45);
+  margin-bottom: 1.4rem;
+}
+
+.problem-list > li:first-child .problem-card h2 {
+  font-size: 1.75rem;
+}
+
+.problem-card h2 {
+  font-size: 1.2rem;
+  overflow-wrap: anywhere;
+}
+
+.problem-card .reason {
+  font-size: 1.1rem;
+}
+
+.problem-card .meta {
+  color: var(--text-muted);
+}
+
+/* Status chip: always an icon and a word, never colour alone */
+.chip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 700;
+  color: var(--on-accent);
+}
+
+.chip svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.chip--down {
+  background: var(--down);
+}
+
+.chip--warn {
+  background: var(--warn);
+}
+
+.chip--info {
+  background: var(--info);
+}
+
+/* Panels in the sidebar */
+.panel {
+  padding: 1.4rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.panel h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.healthy-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.healthy-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.healthy-list .site {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-wrap: anywhere;
+}
+
+.healthy-list svg {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--ok);
+}
+
+.healthy-list .ms {
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* Buttons and inputs: at least 44px tall (2.75rem), AAA target size */
+button,
+input {
+  font: inherit;
+}
+
+.button {
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid var(--control-border);
+  background: transparent;
+  color: var(--text);
+}
+
+.button--primary {
+  border-color: transparent;
+  background: var(--info);
+  color: var(--on-accent);
+}
+
+.empty {
+  padding: 1.4rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 2px solid var(--ok);
+}
+
+/* Header: last-checked time and the pause button, pushed to the right */
+.header-controls {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-controls .last-checked {
+  color: var(--text-muted);
+}
+
+/* Amber outline while live updates are paused, so the state is visible */
+.button--paused {
+  border-color: var(--warn);
+}
+
+.error-banner {
+  max-width: 76rem;
+  margin: 1rem auto 0;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius);
+  background: #2a1a1f;
+  border: 2px solid var(--down);
+}
+
+/* Add-site form (React Aria components add the data- attributes used below) */
+.add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field label {
+  font-weight: 700;
+}
+
+.field .hint {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.field input {
+  min-height: 3rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.6rem;
+  border: 2px solid var(--control-border);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.field input[data-focus-visible] {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* Invalid: a red border AND the error text below, never colour alone */
+.field[data-invalid] input {
+  border-color: var(--down);
+}
+
+.field-error {
+  color: var(--down);
+  font-weight: 700;
+}
+
+.button[data-focus-visible] {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.button[data-pressed] {
+  transform: translateY(1px);
+}
+
+.form-success {
+  margin-top: 0.75rem;
+  color: var(--ok);
+  font-weight: 700;
+}
