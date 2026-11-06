@@ -63,7 +63,7 @@ function App() {
 
   }
 
-    function handleDeleted(url) {
+  function handleDeleted(url) {
     setAnnouncement(`Deleted ${url}.`);
     setReloadKey(reloadKey + 1);
   }
@@ -74,8 +74,11 @@ function App() {
     }
   }, [announcement]);
 
+  const URGENCY = { down: 0, pending: 1 };
+  const problems = sites
+    .filter((site) => site.status !== "up")
+    .sort((a, b) => URGENCY[a.status] - URGENCY[b.status]);
 
-  const problems = sites.filter((site) => site.status !== "up");
   const healthy = sites.filter((site) => site.status === "up");
 
   return (
@@ -135,7 +138,7 @@ function App() {
         </main>
 
         <aside aria-label="Healthy sites and add a site">
-          <HealthyList sites={healthy}  isAdmin={isAdmin} onDeleted={handleDeleted}/>
+          <HealthyList sites={healthy} isAdmin={isAdmin} onDeleted={handleDeleted} />
           {isAdmin ? (
             <AddSiteForm
               onAdded={() => setReloadKey(reloadKey + 1)}
